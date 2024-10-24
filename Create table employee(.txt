@@ -1,0 +1,231 @@
+SELECT,FROM,WHERE,GROUPBY,HAVING,ORDERBY
+
+create table employee(
+empno int(3) primary key auto_increment,
+empname varchar(10) not null,
+salary int(5) not null check(salary>=1000),
+gender varchar(1) not null check(gender in('m','f')),
+dob date not null check(dob<'2006-10-15'),
+desg varchar(10),
+passport varchar(10) unique,
+workmode varchar(10) default 'wfo',
+boss_empno int(3));
+
+
+
+insert into employee(empname,salary,gender,dob,desg,passport,workmode,boss_empno) 
+values('Alice',2000,'f','1970-8-12','ceo','A123456','wfo',null)
+
+
+
+insert into employee(empname,salary,gender,dob,desg,passport,boss_empno) values
+('Ben',1200,'m','1990-8-15','Manager','B123456',1),
+('Chris',1000,'m','1990-8-15','Manager','C123456',1),
+('Maria',1000,'f','1995-8-15','Developer','M123456',2),
+('Jim',1500,'m','2000-8-15','Developer','J123456',2),
+('Akshata',1000,'f','2001-8-15','Clerk','X123456',3);
+
+
+insert into employee(empname,salary,gender,dob,desg,passport,workmode,boss_empno) 
+values
+('George',1200,'m','1990-8-15','Tester','G123456','hybrid',2),
+('Angelina',1000,'f','1990-8-15','Tester','K123456','hybrid',2),
+('Ana',1000,'f','1995-8-15','Admin','R123456','wfh',3),
+('Jack',1500,'m','2000-8-15','Admin','O123456','wfh',3),
+('Pooja',1800,'f','2001-8-15','Admin','P123456','hybrid',3);
+
+DAY2
+
+increase salary of employee named Alice by 100 Rs
+
+update empitv
+set salary=salary+100;
+
+
+update empitv
+set salary=salary + 0.10 *salary
+where desg = 'Developer'
+or
+desg = 'Tester'
+
+update empitv
+set salary=salary + 0.10 *salary
+where desg IN('clerk','manager');
+
+
+update empitv
+set salary=salary + 0.10 *salary
+where desg IN('clerk','manager');
+
+
+update empitv
+set salary=salary + 500
+where desg NOT IN('clerk','manager');
+
+update empitv
+set salary=salary + 500
+where gender = 'f'
+and
+workmode = 'wfo';
+
+
+update empitv
+set salary=salary + 500
+where (gender = 'f'
+and
+workmode = 'wfo')
+or desg = 'admin'
+
+
+update empitv
+set passport=null
+where empname like 'Jack';
+
+
+delete from empitv
+where desg = 'Tester';
+
+
+delete from empitv
+where passport is null;
+
+select empname
+from empitv;
+
+
+SELECT empname as 'Employee Name'
+FROM empitv
+
+SELECT concat( empname, ' ', desg ) AS 'List Of Employees'
+FROM empitv
+
+SELECT upper(empname) AS 'List Of Employees'
+FROM empitv
+
+SELECT upper(empname) AS 'List Of Employees'
+FROM empitv
+where empname like '_____e';
+
+
+SELECT upper( empname ) AS 'List Of Employees'
+FROM empitv
+WHERE empname NOT LIKE '%A'
+
+select empname as '3rd highest salary earner'
+from empitv
+order by salary desc
+limit 1 offset 2;
+
+
+SELECT distinct salary
+FROM empitv
+ORDER BY salary DESC
+LIMIT 1
+OFFSET 2 
+
+SELECT DISTINCT salary
+FROM empitv
+ORDER BY salary DESC
+LIMIT 1
+OFFSET 2
+
+
+select * from empitv
+order by desg ,salary desc,empname asc;
+ 
+DAY3
+doubts solving
+
+DAY4
+
+select min(salary)
+from empitv
+where gender = 'f';
+
+
+select min(salary)
+from empitv
+where gender = 'm'
+and
+dob > '2000-01-01';
+
+select count(empno)
+from empitv;
+
+SELECT count( * )
+FROM empitv;
+
+
+select salary  as 'Median Salary'
+from empitv
+order by salary
+limit 1 offset, (select floor(count(*)/2) from empitv);
+
+
+SELECT empname
+FROM empitv
+WHERE salary = (
+SELECT min( salary )
+FROM empitv) ;
+
+
+SELECT empname
+FROM empitv
+WHERE salary > (
+SELECT avg( salary )FROM empitv where gender = 'm') ;
+
+
+
+display names of female employees
+earning more than the salary of any male employees
+
+select empname from empitv
+where gender = 'f' 
+and 
+salary > (select max(salary) from empitv where gender = 'm');
+
+
+select empname from empitv
+where gender = 'f' 
+and 
+salary > (select max(salary) from empitv where gender = 'm');
+
+select empname from empitv
+where gender = 'f' 
+and 
+salary > ALL(select salary from empitv where gender = 'm');
+			   [1430,1210,2710,1930]
+
+select empname from empitv
+where gender = 'f' 
+and 
+salary > (select min(salary) from empitv where gender = 'm');
+
+
+select empname from empitv
+where gender = 'f' 
+and 
+salary > ANY(select salary from empitv where gender = 'm');	
+			[1430,1210,2710,1930]
+			
+			
+select empname from empitv
+where workmode IN('wfo','hybrid');
+
+
+
+
+SELECT gender, min( salary ) AS 'Minimum Salary'
+FROM empitv
+GROUP BY gender
+
+gender	Minimum Salary
+m	1210
+
+SELECT gender, min( salary ) AS 'Minimum Salary'
+FROM empitv
+GROUP BY gender
+having min( salary ) <1500;
+
+gender	Minimum Salary
+m	1210
